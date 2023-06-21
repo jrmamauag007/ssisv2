@@ -1,3 +1,5 @@
+import tkinter as tk
+from tkinter import ttk
 from tkinter import *
 import ssisv2back
 from tkinter import messagebox
@@ -150,8 +152,14 @@ def delete_data_command():
     ''' delete_data_command function to delete the database.
     
     '''
-    ssisv2back.delete_data()
-    viewstudents_command()
+    confirmation = messagebox.askyesno("Confirmation", "Are you sure you want to delete all data?")
+
+    if confirmation:
+        ssisv2back.delete_data()
+        clear_entries()
+        viewstudents_command()
+    else:
+        messagebox
 
 
 def clear_entries():
@@ -171,83 +179,72 @@ def clear_command():
     lb1.delete(0, END)
     clear_entries()
 
-
-wind = Tk()
+# Create the main window
+window = Tk()
+window.title("Student Information System")
 
 fn = StringVar()
 ln = StringVar()
 id = StringVar()
 course = StringVar()
 
-l0 = Label(wind, text="Student", width="10", fg="blue")
-l0.config(font=("Courier", 14))
+# Create entry fields
+e1= ttk.Entry(window,textvariable=fn)
+e2 = ttk.Entry(window,textvariable= ln)
+e3 = ttk.Entry(window,textvariable=id)
+e4 = ttk.Entry(window,textvariable=course)
 
-l00 = Label(wind, text="Information", width="10", fg="blue")
-l00.config(font=("Courier", 14))
+# Create labels for entry fields
+ttk.Label(window, text="First Name:").grid(row=0, column=0, padx=5, pady=5)
+ttk.Label(window, text="Last Name:").grid(row=1, column=0, padx=5, pady=5)
+ttk.Label(window, text="ID:").grid(row=2, column=0, padx=5, pady=5)
+ttk.Label(window, text="Course:").grid(row=3, column=0, padx=5, pady=5)
 
-l000 = Label(wind, text="System", width="10", fg="blue")
-l000.config(font=("Courier", 14))
+# Position entry fields
+e1.grid(row=0, column=1, padx=5, pady=5)
+e2.grid(row=1, column=1, padx=5, pady=5)
+e3.grid(row=2, column=1, padx=5, pady=5)
+e4.grid(row=3, column=1, padx=5, pady=5)
 
-l1 = Label(wind, text="First Name", width="10")
-l2 = Label(wind, text="Last Name", width="10")
-l3 = Label(wind, text="ID", width="10")
-l4 = Label(wind, text="Course", width="10")
+# Create buttons
+view_students_button = ttk.Button(window, text="View Students", command=viewstudents_command)
+view_courses_button = ttk.Button(window, text="View Courses", command=viewcourses_command)
+add_student_button = ttk.Button(window, text="Add Student", command=addstudent_command)
+add_course_button = ttk.Button(window, text="Add Course", command=addcourse_command)
+update_student_button = ttk.Button(window, text="Update Student", command=updatestudent_command)
+update_course_button = ttk.Button(window, text="Update Course", command=updatecourse_command)
+delete_student_button = ttk.Button(window, text="Delete Student", command=deletestudent_command)
+delete_course_button = ttk.Button(window, text="Delete Course", command=deletecourse_command)
+search_button = ttk.Button(window, text="Search", command=search_command)
+clear_button = ttk.Button(window, text="Clear", command=clear_entries)
+delete_all_button = ttk.Button(window, text="Delete All", command=delete_data_command)
+exit_button = ttk.Button(window, text="Exit", command=clear_command)
 
-e1 = Entry(wind, textvariable=fn)
-e2 = Entry(wind, textvariable=ln)
-e3 = Entry(wind, textvariable=id)
-e4 = Entry(wind, textvariable=course)
-
-b1 = Button(wind, text="View all students", width="15", command=viewstudents_command)
-b2 = Button(wind, text="View all courses", width="15", command=viewcourses_command)
-b3 = Button(wind, text="Search", width="15", command=search_command)
-b4 = Button(wind, text="Add New student", width="15", command=addstudent_command)
-b5 = Button(wind, text="Add New course", width="15", command=addcourse_command)
-b6 = Button(wind, text="Update student", width="15", command=updatestudent_command)
-b7 = Button(wind, text="Update course", width="15", command=updatecourse_command)
-b8 = Button(wind, text="Delete student", width="15", command=deletestudent_command)
-b9 = Button(wind, text="Delete course", width="15", command=deletecourse_command)
-b10 = Button(wind, text="Clear", width="15", command=clear_command)
-b11 = Button(wind, text="Delete all", width="15", command=delete_data_command)
-b12 = Button(wind, text="Exit", width="15", command=wind.destroy)
-
-lb1 = Listbox(wind, height=6, width=35)
-lb1.bind('<<ListboxSelect>>', get_selected_row)
-
-sc = Scrollbar(wind)
-
-l0.grid(row=0, column=1)
-l00.grid(row=0, column=2)
-l000.grid(row=0, column=3)
-l1.grid(row=1, column=0)
-l2.grid(row=1, column=2)
-l3.grid(row=2, column=0)
-l4.grid(row=2, column=2)
-
-e1.grid(row=1, column=1)
-e2.grid(row=1, column=3)
-e3.grid(row=2, column=1)
-e4.grid(row=2, column=3)
-
-b1.grid(row=4, column=3)
-b2.grid(row=5, column=3)
-b3.grid(row=6, column=3)
-b4.grid(row=7, column=3)
-b5.grid(row=8, column=3)
-b6.grid(row=9, column=3)
-b7.grid(row=10, column=3)
-b8.grid(row=11, column=3)
-b9.grid(row=12, column=3)
-b10.grid(row=13, column=3)
-b11.grid(row=14, column=3)
-b12.grid(row=14, column=4)
+# Position buttons
+view_students_button.grid(row=0, column=2, padx=5, pady=5)
+view_courses_button.grid(row=1, column=2, padx=5, pady=5)
+add_student_button.grid(row=0, column=3, padx=5, pady=5)
+add_course_button.grid(row=1, column=3, padx=5, pady=5)
+update_student_button.grid(row=2, column=2, padx=5, pady=5)
+update_course_button.grid(row=3, column=2, padx=5, pady=5)
+delete_student_button.grid(row=2, column=3, padx=5, pady=5)
+delete_course_button.grid(row=3, column=3, padx=5, pady=5)
+search_button.grid(row=4, column=0, padx=5, pady=5)
+clear_button.grid(row=4, column=1, padx=5, pady=5)
+delete_all_button.grid(row=4, column=2, padx=5, pady=5)
+exit_button.grid(row=4, column=3, padx=5, pady=5)
 
 
-lb1.grid(row=4, column=0, rowspan=12, columnspan=2)
+# Create listbox and scrollbar
+lb1 = tk.Listbox(window, height=10, width=70)
+lb1.grid(row=5, column=0, columnspan=4, rowspan=10, padx=5, pady=5)
 
-sc.grid(row=4, column=2, rowspan=12)
+sc = ttk.Scrollbar(window, command=lb1.yview)
+sc.grid(row=5, column=5, rowspan=10, sticky='ns')
 
 lb1.configure(yscrollcommand=sc.set)
-sc.configure(command=lb1.yview)
 
-wind.mainloop()
+# Run the main event loop
+window.mainloop()
+
+
