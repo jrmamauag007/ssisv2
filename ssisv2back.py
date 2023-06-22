@@ -8,27 +8,27 @@ def connect():
     '''
     conn = sqlite3.connect("Students.db")
     cur = conn.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS students (num Integer PRIMARY KEY, fn TEXT, ln TEXT, id TEXT, course TEXT)")
-    cur.execute("CREATE TABLE IF NOT EXISTS courses (num Integer PRIMARY KEY, name TEXT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS students (num Integer PRIMARY KEY, name TEXT, id TEXT, sex TEXT, year TEXT, code TEXT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS courses (num Integer PRIMARY KEY,code TEXT, course TEXT)")
     conn.commit()
     conn.close()
 
-def insert_students(fn,ln,id,course):
+def insert_students(name,id,sex,year,code):
     ''' insertion function to insert a new student to the database.
     
         A.
     '''
-    if not all((fn, ln, id, course)):
-        messagebox.showerror("Error", "All fields must be filled.")
+    if not all((name,id,sex,year,code)):
+        messagebox.showerror("Error", "Student Fields must be filled.")
         return
     
     conn = sqlite3.connect("Students.db")
     cur = conn.cursor()
 
-    cur.execute("SELECT * FROM courses WHERE name = ?", (course,))
+    cur.execute("SELECT * FROM courses WHERE code = ?", (code,))
     result = cur.fetchone()
     if result is None:
-        messagebox.showerror("Error", f"Course '{course}' does not exist")
+        messagebox.showerror("Error", f"Course '{code}' does not exist")
         conn.close()
 
     cur.execute("SELECT * FROM students WHERE id = ?", (id,))
@@ -37,21 +37,17 @@ def insert_students(fn,ln,id,course):
         messagebox.showerror("Error", f"Student '{id}' already exists.")
         conn.close()
 
-    cur.execute("INSERT INTO students Values (NULL,?,?,?,?)",(fn,ln,id,course))
+    cur.execute("INSERT INTO students Values (NULL,?,?,?,?,?)",(name,id,sex,year,code))
     conn.commit()
     conn.close()
 
-def insert_courses(name):
-    ''' insertion function to insert a new student to the database.
-    
-        A.
-    '''
-    if not all((name)):
-        messagebox.showerror("Error", "Course field must be filled.")
+def insert_courses(code,course):
+    if not all((code,course)):
+        messagebox.showerror("Error", "Course fields must be filled.")
         return
     conn = sqlite3.connect("Students.db")
     cur = conn.cursor()
-    cur.execute("INSERT INTO courses Values (NULL,?)",(name))
+    cur.execute("INSERT INTO courses Values (NULL,?,?)",(code,course,))
     conn.commit()
     conn.close()
 
@@ -73,10 +69,10 @@ def view_courses():
     conn.close()
     return rows
 
-def search(fn="",ln="",id="",course=""):
+def search(name="",id="",sex="",year="",code=""):
     conn = sqlite3.connect("Students.db")
     cur = conn.cursor()
-    cur.execute("Select * FROM students WHERE fn=? or ln=? or id=? or course=?",(fn,ln,id,course))
+    cur.execute("Select * FROM students WHERE name=? or id=? or sex=? or year=? or code=?",(name,id,sex,year,code))
     rows = cur.fetchall()
     conn.close()
     return(rows)
@@ -96,19 +92,23 @@ def delete_course(num):
     conn.commit()
     conn.close()
 
-def update_students(num,fn,ln,id,course):
-
+def update_students(num,name,id,sex,year,code):
+    if not all((num,name,id,sex,year,code)):
+        messagebox.showerror("Error", "Student fields must be filled.")
+        return
     conn = sqlite3.connect("Students.db")
     cur = conn.cursor()
-    cur.execute("UPDATE students SET fn=?, ln=?, id=?, course=? WHERE num=?",(fn,ln,id,course,num))
+    cur.execute("UPDATE students SET name=?, id=?, sex=?, year=?,code=? WHERE num=?",(name,id,sex,year,code,num))
     conn.commit()
     conn.close()
 
-def update_courses(num,name):
-
+def update_courses(num,name,course):
+    if not all((num,num,name,course)):
+        messagebox.showerror("Error", "Course fields must be filled.")
+        return
     conn = sqlite3.connect("Students.db")
     cur = conn.cursor()
-    cur.execute("UPDATE courses SET name=? WHERE num=?",(name,num))
+    cur.execute("UPDATE courses SET code=?, course=? WHERE num=?",(name,course,num))
     conn.commit()
     conn.close()
 

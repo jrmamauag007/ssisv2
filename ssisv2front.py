@@ -1,6 +1,6 @@
 import tkinter as tk
-from tkinter import ttk
 from tkinter import *
+from tkinter import ttk
 import ssisv2back
 from tkinter import messagebox
 
@@ -19,8 +19,14 @@ def get_selected_row(event):
         clear_entries()
         e1.insert(END, selected_tuple[1])
         e2.insert(END, selected_tuple[2])
-        e3.insert(END, selected_tuple[3])
-        e4.insert(END, selected_tuple[4])
+        sex_value = selected_tuple[3]
+        sex_index = sex_options.index(sex_value)
+        sex_combo.current(sex_index)
+        year_value = selected_tuple[4]
+        year_index = year_options.index(year_value)
+        year_combo.current(year_index)
+        e3.insert(END, selected_tuple[5])
+        
 
 
 def viewstudents_command():
@@ -45,7 +51,7 @@ def search_command():
     
     '''
     lb1.delete(0, END)
-    for row in ssisv2back.search(fn.get(), ln.get(), id.get(), course.get()):
+    for row in ssisv2back.search(name.get(), id.get(), sex.get(), year.get(),code.get()):
         lb1.insert(END, row)
     clear_entries()
 
@@ -54,22 +60,18 @@ def addstudent_command():
     ''' add_command function to add a new student to the database.
     
     '''
-    ssisv2back.insert_students(fn.get(), ln.get(), id.get(), course.get())
+    ssisv2back.insert_students(name.get(), id.get(), sex.get(), year.get(),code.get())
     clear_entries()
     viewstudents_command()
 
 def addcourse_command():
-    ''' add_command function to add a new student to the database.
-    
-    '''
-    ssisv2back.insert_courses((course.get(),))
+
+    ssisv2back.insert_courses(code.get(),course.get(),)
     clear_entries()
     viewcourses_command()
 
 def updatestudent_command():
-    ''' updatestudent_command function to update the data of a specific student.
-
-    '''
+    global selected_tuple
     if not lb1.curselection():
         messagebox.showwarning("Warning", "No student selected.")
         return
@@ -78,7 +80,7 @@ def updatestudent_command():
     confirmation = messagebox.askyesno("Confirmation", "Are you sure you want to update the student's data?")
 
     if confirmation:
-        ssisv2back.update_students(selected_tuple[0], fn.get(), ln.get(), id.get(), course.get())
+        ssisv2back.update_students(selected_tuple[0], name.get(), id.get(), sex.get(), year.get(),code.get())
         clear_entries()
         viewstudents_command()
     else:
@@ -89,6 +91,7 @@ def updatecourse_command():
     ''' updatecourse_command function to update the data of a specific course.
     
     '''
+    global selected_tuple
     if not lb1.curselection():
         messagebox.showwarning("Warning", "No course selected.")
         return
@@ -97,7 +100,7 @@ def updatecourse_command():
     confirmation = messagebox.askyesno("Confirmation", "Are you sure you want to update the course's data?")
 
     if confirmation:
-        ssisv2back.update_courses(selected_tuple[0], course.get())
+        ssisv2back.update_courses(selected_tuple[0], code.get(),course.get())
         clear_entries()
         viewcourses_command()
     else:
@@ -182,29 +185,42 @@ def clear_command():
 # Create the main window
 window = Tk()
 window.title("Student Information System")
+window.resizable(False,False)
 
-fn = StringVar()
-ln = StringVar()
+name = StringVar()
 id = StringVar()
+code = StringVar()
 course = StringVar()
+sex = StringVar()
+year = StringVar()
 
 # Create entry fields
-e1= ttk.Entry(window,textvariable=fn)
-e2 = ttk.Entry(window,textvariable= ln)
-e3 = ttk.Entry(window,textvariable=id)
+e1= ttk.Entry(window,textvariable=name)
+e2 = ttk.Entry(window,textvariable= id)
+e3 = ttk.Entry(window,textvariable=code)
 e4 = ttk.Entry(window,textvariable=course)
 
+sex_options = ['Male', 'Female']
+sex_combo = ttk.Combobox(window, textvariable=sex, values=sex_options, state='readonly')
+
+year_options = ['Freshman', 'Sophomore', 'Junior', 'Senior']
+year_combo = ttk.Combobox(window, textvariable=year, values=year_options, state='readonly')
+
 # Create labels for entry fields
-ttk.Label(window, text="First Name:").grid(row=0, column=0, padx=5, pady=5)
-ttk.Label(window, text="Last Name:").grid(row=1, column=0, padx=5, pady=5)
-ttk.Label(window, text="ID:").grid(row=2, column=0, padx=5, pady=5)
-ttk.Label(window, text="Course:").grid(row=3, column=0, padx=5, pady=5)
+ttk.Label(window, text="Name:").grid(row=0, column=0, padx=5, pady=5)
+ttk.Label(window, text="ID:").grid(row=1, column=0, padx=5, pady=5)
+ttk.Label(window, text="Sex:").grid(row=2, column=0, padx=5, pady=5)
+ttk.Label(window, text="Year:").grid(row=3, column=0, padx=5, pady=5)
+ttk.Label(window, text="Course Code:").grid(row=4, column=0, padx=5, pady=5)
+ttk.Label(window, text="Course Name:").grid(row=4, column=2, padx=5, pady=5)
 
 # Position entry fields
 e1.grid(row=0, column=1, padx=5, pady=5)
 e2.grid(row=1, column=1, padx=5, pady=5)
-e3.grid(row=2, column=1, padx=5, pady=5)
-e4.grid(row=3, column=1, padx=5, pady=5)
+sex_combo.grid(row=2, column=1, padx=5, pady=5)
+year_combo.grid(row=3, column=1, padx=5, pady=5)
+e3.grid(row=4, column=1, padx=5, pady=5)
+e4.grid(row=4, column=3, padx=5, pady=5)
 
 # Create buttons
 view_students_button = ttk.Button(window, text="View Students", command=viewstudents_command)
@@ -229,18 +245,19 @@ update_student_button.grid(row=2, column=2, padx=5, pady=5)
 update_course_button.grid(row=3, column=2, padx=5, pady=5)
 delete_student_button.grid(row=2, column=3, padx=5, pady=5)
 delete_course_button.grid(row=3, column=3, padx=5, pady=5)
-search_button.grid(row=4, column=0, padx=5, pady=5)
-clear_button.grid(row=4, column=1, padx=5, pady=5)
-delete_all_button.grid(row=4, column=2, padx=5, pady=5)
-exit_button.grid(row=4, column=3, padx=5, pady=5)
+search_button.grid(row=6, column=0, padx=5, pady=5)
+clear_button.grid(row=6, column=1, padx=5, pady=5)
+delete_all_button.grid(row=6, column=2, padx=5, pady=5)
+exit_button.grid(row=6, column=3, padx=5, pady=5)
 
 
 # Create listbox and scrollbar
 lb1 = tk.Listbox(window, height=10, width=70)
-lb1.grid(row=5, column=0, columnspan=4, rowspan=10, padx=5, pady=5)
+lb1.bind('<<ListboxSelect>>',get_selected_row)
+lb1.grid(row=8, column=0, columnspan=4, rowspan=10, padx=5, pady=5)
 
 sc = ttk.Scrollbar(window, command=lb1.yview)
-sc.grid(row=5, column=5, rowspan=10, sticky='ns')
+sc.grid(row=8, column=5, rowspan=10, sticky='ns')
 
 lb1.configure(yscrollcommand=sc.set)
 
